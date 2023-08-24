@@ -37,4 +37,9 @@ def update_quiver(num, Q, X, Y):
 
 ani = animation.FuncAnimation(fig, update_quiver, fargs=(Q, X, Y), frames=100, interval=50, blit=True)
 
+# Exporta la animación en formato MP4
+Writer = animation.writers['ffmpeg']
+writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
+ani.save('animation.mp4', writer=writer)
+
 plt.show()
