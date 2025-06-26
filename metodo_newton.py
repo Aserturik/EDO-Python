@@ -1,12 +1,15 @@
+import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')  # Usar backend no interactivo antes de importar pyplot
 
 
 def f(x):
-    return 4*x**2-1-2*x
+    return 2*x**2 - x - 5
 
 
 def df(x):
-    return 8*x - 2
+    return 4*x - 1
 
 
 x0, eps1, eps2, k = 2, 0.0001, 0.0001, 0
@@ -41,3 +44,21 @@ if k >= max_iter:
 else:
     print(f'La solución es: x = {x1:.10f}')
     print(f'Verificación: f(x) = {f(x1):.2e}')
+
+
+x = np.linspace(-2, 2.5, 100)
+y = f(x)
+plt.figure(figsize=(10, 6))
+plt.plot(x, y, color='red', label='f(x) = 4x² - 2x - 5')
+plt.plot(x, 0*x, color='black', linestyle='--', label='y = 0')
+plt.axhline(y=0, color='black', linestyle='-', alpha=0.3)
+plt.axvline(x=0, color='black', linestyle='-', alpha=0.3)
+plt.plot(x1, f(x1), 'go', markersize=8, label=f'Raíz: x = {x1:.6f}')
+plt.plot(x1, f(-2), 'go', markersize=8, label=f'Raíz: x = {x1:.6f}')
+plt.grid(True)
+plt.xlabel('x')
+plt.ylabel('f(x)')
+plt.title('Método de Newton-Raphson')
+plt.legend()
+plt.savefig('metodo_newton_grafica.png', dpi=300, bbox_inches='tight')
+print('Gráfica guardada como: metodo_newton_grafica.png')
