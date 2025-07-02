@@ -2,11 +2,11 @@ import numpy as np
 
 
 def f(x):
-    return 4*x**2-1-2*x
+    return x**2-2*x-3
 
 
 def g(x):
-    return ((2*x + 1)/4)**0.5
+    return (2*x+3)**(0.5)
 
 
 def gprima(x):
@@ -14,7 +14,7 @@ def gprima(x):
     return (g(x + h) - g(x)) / h
 
 
-x0, eps1, eps2, k = 2, 0.0001, 0.0001, 0
+x0, eps1, eps2, k = 4, 0.0001, 0.0001, 0
 max_iter = 100
 
 x1 = g(x0)
