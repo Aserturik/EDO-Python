@@ -1,8 +1,8 @@
 import numpy as np
 
-A = np.array([[2, 4], [3, 6]], dtype=float)
-b = np.array([[0], [0]], dtype=float)
-# b = np.array([[6], [5]], dtype=float)
+A = np.array([[2, 3, 1], [0, 2, 1], [1, 0, 1]], dtype=float)
+# b = np.array([[0], [0]], dtype=float)
+b = np.array([[0], [1], [0]], dtype=float)
 B = np.hstack((A, b))  # Matriz ampliada
 
 print("Matriz A:\n", A)
