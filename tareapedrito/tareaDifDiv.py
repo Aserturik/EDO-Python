@@ -1,32 +1,30 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 X = np.array([0.5, 1, 2, 4, 8, 12], dtype=float)
 Y = np.array([160, 120, 94, 75, 62, 56], dtype=float)
-
-print("Puntos generados:")
-print("I:", X)
-print("V:", Y)
 
 n = len(X)
 D = np.zeros((n, n), dtype=float)
 D[:, 0] = Y
+
 
 for j in range(1, n):
     for i in range(n - j):
         D[i, j] = (D[i + 1, j - 1] - D[i, j - 1]) / (X[i + j] - X[i])
 
 
-def P_n(X, D, xv):
+def P_n(x, X, D):
     n = len(X)
-    suma = D[0, 0]
+    resultado = D[0, 0]
+
     for i in range(1, n):
-        prod = D[0, i]
+        producto = 1.0
         for j in range(i):
-            prod *= (xv - X[j])
-        suma += prod
-    return suma
+            producto *= (x - X[j])
+        resultado += D[0, i] * producto
+
+    return resultado
 
 
 print("\nMatriz de diferencias divididas D:")
@@ -35,34 +33,36 @@ for i in range(n):
         print(f"D[{i}, {j}]: {D[i, j]:.6f}", end="  ")
     print()
 
-# Mostrar los coeficientes del polinomio de Newton (primera fila de D)
 print(f"\nCoeficientes del polinomio de Newton (grado {n-1}):")
 for i in range(n):
     print(f"c_{i}: {D[0, i]:.6f}")
 
-# Mostrar el polinomio en forma textual mejorada
-print("\nPolinomio P(x) en forma de Newton:")
-print(f"P(x) = {D[0, 0]:.3f}", end="")
+
+print("\nPolinomio de Newton (forma simbólica):")
+polynomial_str = f"{D[0, 0]:.4f}"
 for i in range(1, n):
-    coef = D[0, i]
-    if abs(coef) < 1e-10:  # Omitir coeficientes muy pequeños
-        continue
-    if coef >= 0:
-        print(f" + {coef:.3f}", end="")
-    else:
-        print(f" - {abs(coef):.3f}", end="")
-
-    # Mostrar los términos (x - x_i) en líneas separadas para mejor legibilidad
-    print("·", end="")
+    polynomial_str += f" + {D[0, i]:.4f}"
     for j in range(i):
-        if j == 0:
-            print(f"(x - {X[j]:.3f})", end="")
-        else:
-            print(f"·(x - {X[j]:.3f})", end="")
+        polynomial_str += f"*(x - {X[j]})"
+print(polynomial_str)
 
-    if i < n-1:  # No añadir nueva línea en el último término
-        print()
-        print("     ", end="")  # Indentación para alinear términos
-print()
+i_x = 7
+i_y = P_n(i_x, X, D)
+print('\nInterpolación polinómica de 7:', i_y)
+print(f'P({i_x}) = {i_y:.2f}')
 
 
+plt.scatter(X, Y, color='red', label='Datos')
+plt.scatter(i_x, i_y, color='blue',
+            label=f'Punto Interpolado ({i_x}, {i_y:.2f})')
+plt.text(i_x, i_y, f"({i_x}, {i_y:.2f})", fontsize=8)
+x_vals = np.linspace(min(X), max(X), 200)
+y_vals = [P_n(x, X, D) for x in x_vals]
+plt.plot(x_vals, y_vals, label='Polinomio')
+for i in range(len(X)):
+    plt.text(X[i], Y[i], f"({X[i]:.0f}, {Y[i]:.2f})", fontsize=8)
+plt.xlabel('I')
+plt.ylabel('V')
+plt.legend()
+plt.title('Metodo de deferencias divididas')
+plt.savefig("parcial-alex.png")
