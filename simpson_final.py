@@ -13,7 +13,7 @@ def simpson_doble(f, c, d, a, b, n, m):
 
     for i in range(n + 1):
         x = a + i * h1
-        
+
         # Determinar peso en x
         if i == 0 or i == n:
             peso_x = 1
@@ -21,10 +21,10 @@ def simpson_doble(f, c, d, a, b, n, m):
             peso_x = 4
         else:
             peso_x = 2
-            
+
         for j in range(m + 1):
             y = c + j * h2
-            
+
             # Determinar peso en y
             if j == 0 or j == m:
                 peso_y = 1
@@ -32,7 +32,7 @@ def simpson_doble(f, c, d, a, b, n, m):
                 peso_y = 4
             else:
                 peso_y = 2
-                
+
             # Peso total = peso_x * peso_y
             peso_total = peso_x * peso_y
             suma += peso_total * f(x, y)
@@ -41,32 +41,57 @@ def simpson_doble(f, c, d, a, b, n, m):
     return area
 
 
-def simpson_doble_variable(f, a, b, n, g1, g2, m):
-    # Simpson para límites variables en y: y va de g1(x) a g2(x)
+def simpson_doble_variable(f, a, b, n, g1, g2, m, direccion='y'):
+    # Simpson para límites variables
+    # direccion='y': y va de g1(x) a g2(x) (límites variables en y)
+    # direccion='x': x va de g1(y) a g2(y) (límites variables en x)
     if n % 2 != 0 or m % 2 != 0:
         raise ValueError("n y m deben ser números pares")
 
-    h1 = (b - a) / n
     suma = 0
 
-    for i in range(n + 1):
-        x = a + i * h1
+    if direccion == 'y':
+        # Límites variables en y: y va de g1(x) a g2(x)
+        h1 = (b - a) / n
         
-        # Determinar peso en x
-        if i == 0 or i == n:
-            peso_x = 1
-        elif i % 2 == 1:
-            peso_x = 4
-        else:
-            peso_x = 2
+        for i in range(n + 1):
+            x = a + i * h1
             
-        # Límites variables en y
-        y_inf = g1(x)
-        y_sup = g2(x)
-        h2 = (y_sup - y_inf) / m
+            # Determinar peso en x
+            if i == 0 or i == n:
+                peso_x = 1
+            elif i % 2 == 1:
+                peso_x = 4
+            else:
+                peso_x = 2
+                
+            # Límites variables en y
+            y_inf = g1(x)
+            y_sup = g2(x)
+            h2 = (y_sup - y_inf) / m
+            
+            for j in range(m + 1):
+                y = y_inf + j * h2
+                
+                # Determinar peso en y
+                if j == 0 or j == m:
+                    peso_y = 1
+                elif j % 2 == 1:
+                    peso_y = 4
+                else:
+                    peso_y = 2
+                    
+                peso_total = peso_x * peso_y
+                suma += peso_total * f(x, y) * h2 / 3
+
+        area = h1 / 3 * suma
+        
+    else:  # direccion == 'x'
+        # Límites variables en x: x va de g1(y) a g2(y)
+        h2 = (b - a) / m
         
         for j in range(m + 1):
-            y = y_inf + j * h2
+            y = a + j * h2
             
             # Determinar peso en y
             if j == 0 or j == m:
@@ -76,20 +101,37 @@ def simpson_doble_variable(f, a, b, n, g1, g2, m):
             else:
                 peso_y = 2
                 
-            peso_total = peso_x * peso_y
-            suma += peso_total * f(x, y) * h2 / 3
+            # Límites variables en x
+            x_inf = g1(y)
+            x_sup = g2(y)
+            h1 = (x_sup - x_inf) / n
+            
+            for i in range(n + 1):
+                x = x_inf + i * h1
+                
+                # Determinar peso en x
+                if i == 0 or i == n:
+                    peso_x = 1
+                elif i % 2 == 1:
+                    peso_x = 4
+                else:
+                    peso_x = 2
+                    
+                peso_total = peso_x * peso_y
+                suma += peso_total * f(x, y) * h1 / 3
 
-    area = h1 / 3 * suma
+        area = h2 / 3 * suma
+    
     return area
 
 
 if __name__ == "__main__":
     print("Seleccione una de las siguientes opciones:")
-    print("1. Integral de y*sin(x) donde x va de 0 a pi y y va de 0 a x")
-    print("2. Integral x va de 0 a 1 y y va de raíz de x a 1")
+    print("1. Integral de y*sen(x) donde x va de 0 a y y y va de 0 a pi")
+    print("2. Integral de 1 donde x va de 0 a 1 y y va de raíz de x a 1")
     print("3. Integral de 1 donde x va de 1 a 2 y y va de x a x al cuadrado")
     print("4. Integral de 1 donde y va de 0 a 2 y x va de 1 a e elevado a la y")
-    print("5. Integral de la y*sin(x) donde y va de 0 a pi y x va de 0 a 3")
+    print("5. Integral de la y*sen(x) donde y va de 0 a pi y x va de 0 a 3")
     opcion = int(input("Ingrese el número de la opción: "))
 
     n = 6  # subintervalos en x
@@ -102,7 +144,7 @@ if __name__ == "__main__":
     if opcion == 1:
         def f1(x, y): return y * np.sin(x)
         resultado = simpson_doble_variable(
-            f1, 0, np.pi, n, lambda x: 0, lambda x: x, m)
+            f1, 0, np.pi, m, lambda y: 0, lambda y: y, n, direccion='x')
     elif opcion == 2:
         def f2(x, y): return 1
         resultado = simpson_doble_variable(
